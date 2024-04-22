@@ -1,8 +1,13 @@
-import Cart from "@/components/Cart/Cart";
+import LoginForm from "@/components/Auth/LoginForm copy";
+import { AccountVerifyOtp } from "@/components/Auth/auth";
 import React from "react";
 
 const Test = () => {
-  return <Cart />;
+  return (
+    <div>
+      <AccountVerifyOtp />
+    </div>
+  );
 };
 
 export default Test;

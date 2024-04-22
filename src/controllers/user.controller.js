@@ -5,14 +5,10 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
 import { mailSender } from "../utils/mailer.js";
-import dotenv from "dotenv";
+import { sendEmail } from "../utils/sendEmail.js";
+import { accountVerificationEmailContent } from "../utils/email.template.js";
 
-//Config
-dotenv.config({
-  path: "./.env",
-});
-
-// ################## Generate Access and Refresh Access Token ##################
+// ################## Generate Access and Refresh Token ##################
 
 const generateAccessAndRefreshTokens = async (userId) => {
   try {
@@ -32,144 +28,183 @@ const generateAccessAndRefreshTokens = async (userId) => {
   }
 };
 
-// ################## Register User ##################
+// ########### Generate and Send Otp ############
 
-const registerUser = asyncHandler(async (req, res) => {
-  // console.log("hi");
-  const { fullName, email, password } = req.body;
-
-  if ([fullName, email, password].some((field) => field?.trim() === "")) {
-    throw new ApiError(400, "All fields are required");
+const generateAndSendOtp = async ({ userId, email, phone }) => {
+  // console.log(userId, email, phone);
+  if (!userId && !phone && !email) {
+    throw new ApiError(400, "userId or phone or email is required");
   }
 
-  const existedUser = await User.findOne({ email: email });
-  // console.log(existedUser, "kjhfg");
-  if (existedUser) {
-    throw new ApiError(409, "User with this email already exists");
-  }
-
-  const user = await User.create({
-    fullName,
-    email,
-    password,
+  const _id = userId;
+  const existedUser = await User.findOne({
+    $or: [{ _id }, { phone }, { email }],
   });
+  if (!existedUser) {
+    throw new ApiError(500, "User does not exist");
+  }
 
-  const createdUser = await User.findById(user._id).select(
-    "-password -refreshToken"
+  let verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
+  const expiryDate = new Date();
+  expiryDate.setMinutes(expiryDate.getMinutes() + 5);
+  existedUser.verifyCode = verifyCode;
+  existedUser.verifyCodeExpiry = expiryDate;
+  await existedUser.save({ validateBeforeSave: false });
+
+  //  ------ email sending-----------
+  let fullName = existedUser.fullName;
+  let sendingEmail = email || existedUser.email;
+
+  const emailContent = accountVerificationEmailContent(fullName, verifyCode);
+  const emailResponse = await sendEmail(
+    [sendingEmail],
+    "Account Verification",
+    emailContent
   );
 
-  if (!createdUser) {
-    throw new ApiError(500, "Something went wrong while registering the user");
+  if (emailResponse.success == "false") {
+    throw new ApiError(
+      500,
+      "Something went wrong while sending verification email"
+    );
   }
-  const DOMAIN_NAME = process.env.DOMAIN_NAME;
-  // console.log(DOMAIN_NAME);
-  // const mailContent = `<p> Hi ${fullName}, Please <a href = ${DOMAIN_NAME}/verifyemail?id=${createdUser._id}>Verify </a> your mail. </p>`;
-  // console.log(email);
-  const mailContent = `<div
-  style="
-    font-family: Helvetica, Arial, sans-serif;
-    min-width: 1000px;
-    overflow: auto;
-    line-height: 2;
-  "
->
-  <div style="margin: 50px auto; width: 70%; padding: 20px 0">
-    <div style="border-bottom: 1px solid #eee">
-      <a
-        href=${DOMAIN_NAME}
-        style="
-          font-size: 1.4em;
-          color: #00466a;
-          text-decoration: none;
-          font-weight: 600;
-        "
-        >Neartocollege</a
-      >
-    </div>
-    <h2
-      style="
-        margin: 0 auto;
-        width: max-content;
-        padding: 0 10px;
-        border-radius: 4px;
-      "
-    >
-      Verify Your Email
-    </h2>
-    <p style="font-size: 1.1em">Hi, ${fullName}</p>
-    <p>
-      Thank you for choosing Neartocollege. Please click the button below to
-      verify your email.
-    </p>
+  return { success: "true", verifyCode: verifyCode };
+};
 
-    <a
-    href = ${DOMAIN_NAME}/verifyemail?id=${createdUser._id}
-      style="
-        background-color: #1c64f2;
-        border: none;
-        color: white;
-        padding: 15px 32px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        margin: 10px 2px;
-        cursor: pointer;
-        border-radius: 5px;
-      "
-    >
-      Verify Email
-    </a>
-    <p style="font-size: 0.9em">Regards,<br />Neartocollege</p>
-    <hr style="border: none; border-top: 1px solid #eee" />
-  </div>
-</div>
-`;
-  await mailSender([email], "Account Verification", mailContent);
+// ##################### Register User ###################
 
-  return res
-    .status(201)
-    .json(new ApiResponse(200, createdUser, "User registered Successfully"));
+const registerUser = asyncHandler(async (req, res) => {
+  const { fullName, email, phone, password } = req.body;
+  try {
+    if (
+      [fullName, email, phone, password].some((field) => field?.trim() === "")
+    ) {
+      throw new ApiError(400, "All fields are required");
+    }
+    // console.log(fullName, email, phone, password);
+
+    const existedUser = await User.findOne({
+      $or: [{ phone }, { email }],
+    });
+
+    let responseData = {};
+    if (existedUser) {
+      if (existedUser.isVerified) {
+        throw new ApiError(
+          409,
+          "User with email or phone number already exists"
+        );
+      } else {
+        // OTP Handling
+        const userId = existedUser._id;
+        const response = await generateAndSendOtp({ userId });
+        if (response.success == "false") {
+          throw new ApiError(
+            500,
+            "Something went wrong while generating and sending verification email"
+          );
+        }
+        responseData = existedUser;
+      }
+    } else {
+      const user = await User.create({
+        fullName,
+        email,
+        password,
+        phone,
+      });
+
+      const userId = user._id;
+      const createdUser = await User.findById(userId);
+
+      if (!createdUser) {
+        throw new ApiError(
+          500,
+          "Something went wrong while registering the user"
+        );
+      }
+
+      // OTP Handling
+      const response = await generateAndSendOtp({ userId });
+      if (response.success == "false") {
+        throw new ApiError(
+          500,
+          "Something went wrong while generating and sending verification email"
+        );
+      }
+      responseData = createdUser;
+    }
+
+    return res
+      .status(201)
+      .json(
+        new ApiResponse(
+          200,
+          responseData,
+          "User registered successfully. Please verify your account."
+        )
+      );
+  } catch (error) {
+    throw new ApiError(
+      500,
+      error?.message || "Something went wrong while registering the user"
+    );
+  }
+});
+
+// ############## Verify Account #################
+
+const verifyAccount = asyncHandler(async (req, res) => {
+  const { email, phone, verifyCode } = req.body;
+  console.log(email, phone, verifyCode);
+  if (!phone && !email) {
+    throw new ApiError(400, "phone or email is required");
+  }
+  if (!verifyCode) {
+    throw new ApiError(400, "Verify code is required");
+  }
+
+  const user = await User.findOne({
+    $or: [{ phone }, { email }],
+  });
+
+  if (!user) {
+    throw new ApiError(404, "User does not exist");
+  }
+
+  // Check if the code is correct and not expired
+  const isCodeValid = user.verifyCode === verifyCode;
+  const isCodeNotExpired = new Date(user.verifyCodeExpiry) > new Date();
+
+  if (isCodeValid && isCodeNotExpired) {
+    // Update the user's verification status
+    user.isVerified = true;
+    await user.save();
+    return res
+      .status(200)
+      .json(new ApiResponse(200, {}, "Account verified successfully"));
+  } else if (!isCodeNotExpired) {
+    // Code has expired
+    throw new ApiError(400, "Verification code has expired");
+  } else {
+    // Code is incorrect
+    throw new ApiError(400, "Invalid verification code");
+  }
 });
 
 // ############## Login #################
 
 const loginUser = asyncHandler(async (req, res) => {
-  // req body -> data
-  // username or email
-  //find the user
-  //password check
-  //access and refresh token
-  //send cookie
-
-  const { email, password } = req.body;
-  // console.log(email);
-
-  if (!email && !password) {
-    throw new ApiError(400, "email and password is required");
+  const { email, phone, password } = req.body;
+  if (!phone && !email) {
+    throw new ApiError(400, "phone or email is required");
   }
-
-  // Here is an alternative of above code based on logic discussed in video:
-  // if (!(username || email)) {
-  //     throw new ApiError(400, "username or email is required")
-
-  // }
-  // User.find({ name: 'Punit'}
-  // const user = await User.findOne({
-  //   $or: [{ username }, { email }],
-  // });
-
-  const user = await User.findOne({ email: email });
-  // const user = await User.find({
-  //   email: email,
-  // });
-  // console.log(user);
+  const user = await User.findOne({
+    $or: [{ phone }, { email }],
+  });
 
   if (!user) {
     throw new ApiError(404, "User does not exist");
-  }
-  if (!user.isVerified) {
-    throw new ApiError(404, "This account is not verified");
   }
 
   const isPasswordValid = await user.isPasswordCorrect(password);
@@ -206,6 +241,98 @@ const loginUser = asyncHandler(async (req, res) => {
         "User logged In Successfully"
       )
     );
+});
+
+// ############## Generate Otp #################
+
+const generateOtpForLogin = asyncHandler(async (req, res) => {
+  const { email, phone } = req.body;
+
+  if (!phone && !email) {
+    throw new ApiError(400, "phone or email is required");
+  }
+
+  const user = await User.findOne({
+    $or: [{ phone }, { email }],
+  });
+
+  if (!user) {
+    throw new ApiError(404, "User does not exist");
+  }
+
+  // OTP Handling
+  const response = await generateAndSendOtp({ email, phone });
+  if (response.success == "false") {
+    throw new ApiError(
+      500,
+      "Something went wrong while generating and sending verification email"
+    );
+  }
+
+  return res
+    .status(201)
+    .json(new ApiResponse(200, {}, "Otp Sended successfully"));
+});
+
+// ############## Login With Otp #################
+
+const loginWithOtp = asyncHandler(async (req, res) => {
+  const { email, phone, verifyCode } = req.body;
+  if (!phone && !email) {
+    throw new ApiError(400, "phone or email is required");
+  }
+  if (!verifyCode) {
+    throw new ApiError(400, "Verify code is required");
+  }
+
+  const user = await User.findOne({
+    $or: [{ phone }, { email }],
+  });
+
+  if (!user) {
+    throw new ApiError(404, "User does not exist");
+  }
+
+  // Check if the code is correct and not expired
+  const isCodeValid = user.verifyCode === verifyCode;
+  const isCodeNotExpired = new Date(user.verifyCodeExpiry) > new Date();
+
+  if (isCodeValid && isCodeNotExpired) {
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+      user._id
+    );
+
+    const loggedInUser = await User.findById(user._id).select(
+      "-password -refreshToken"
+    );
+
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json(
+        new ApiResponse(
+          200,
+          {
+            user: loggedInUser,
+            accessToken,
+            refreshToken,
+          },
+          "User logged In Successfully"
+        )
+      );
+  } else if (!isCodeNotExpired) {
+    // Code has expired
+    throw new ApiError(400, "Verification code has expired");
+  } else {
+    // Code is incorrect
+    throw new ApiError(400, "Invalid verification code");
+  }
 });
 
 // ################## Logout ##################
@@ -531,7 +658,10 @@ const contactUs = asyncHandler(async (req, res) => {
 // ################### Exports Controllers #################
 export {
   registerUser,
+  verifyAccount,
   loginUser,
+  generateOtpForLogin,
+  loginWithOtp,
   logoutUser,
   refreshAccessToken,
   changeCurrentPassword,

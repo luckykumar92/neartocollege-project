@@ -26,7 +26,7 @@ import { setOrderData } from "@/redux/features/print/orderSlice.js";
 
 const PrintOrder = () => {
   const data = useSelector((state) => state.order.orderData);
-  console.log(data,"hgftcyvghbjk");
+  console.log(data, "hgftcyvghbjk");
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -76,7 +76,7 @@ const PrintOrder = () => {
           <CardContent className="flow-root"> */}
           <ul className="divide-y divide-black">
             <li className="py-3 sm:py-4">
-              <div className="flex items-center">
+              <div className="flex items-center glass">
                 <div className="flex-1 min-w-0 ms-4">
                   <span className="text-md font-medium truncate text-black">
                     <p className="text-lg">Shop Name :</p>

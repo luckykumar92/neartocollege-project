@@ -4,16 +4,19 @@ import {
   changeCurrentPassword,
   contactUs,
   forgotPassword,
+  generateOtpForLogin,
   getCurrentUser,
   getUserByEmail,
   getUserById,
   loginUser,
+  loginWithOtp,
   logoutUser,
   mailVerification,
   refreshAccessToken,
   registerUser,
   updateAccountDetails,
   updateUserAvatar,
+  verifyAccount,
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
@@ -25,7 +28,11 @@ const router = Router();
 // });
 
 router.route("/register").post(registerUser);
+router.route("/verify-account").post(verifyAccount);
 router.route("/login").post(loginUser);
+router.route("/generate-otp-for-login").post(generateOtpForLogin);
+router.route("/login-with-otp").post(loginWithOtp);
+
 //secured routes
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/refresh-token").post(refreshAccessToken);

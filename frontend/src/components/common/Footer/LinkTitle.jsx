@@ -4,7 +4,7 @@ const LinkTitle = ({ title }) => {
   return (
     <div>
       <span className="pr-5">
-        <ChevronRight className="absolute text-[#17AD94] w-5" />
+        <ChevronRight className="absolute text-[#b1e5ff] w-5" />
       </span>
       {title}
     </div>

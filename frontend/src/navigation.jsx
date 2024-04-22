@@ -10,6 +10,8 @@ import {
   ForgotPassword,
   ForgotPasswordChange,
   IsVerified,
+  AccountVerifyOtp,
+  LoginWithOtp,
 } from "@/components/Auth/auth.js";
 import {
   HomePage,
@@ -23,6 +25,7 @@ import {
   Cart,
   About,
 } from "./pages/pages.js";
+import Test from "./pages/Test.jsx";
 // ################ Router ###################
 
 const router = createBrowserRouter([
@@ -63,10 +66,10 @@ const router = createBrowserRouter([
         path: "/faq",
         element: <Faq />,
       },
-      // {
-      // path: "/test",
-      // element: <Test />,
-      //},
+      {
+        path: "/test",
+        element: <Test />,
+      },
       // {
       //   path: "/how-it-works",
       //   element: <HowItWorks />,
@@ -84,6 +87,22 @@ const router = createBrowserRouter([
         element: (
           <AuthLayout authentication={false}>
             <SignupForm />
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/account-verify",
+        element: (
+          <AuthLayout authentication={false}>
+            <AccountVerifyOtp />
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/login-with-otp",
+        element: (
+          <AuthLayout authentication={false}>
+            <LoginWithOtp />
           </AuthLayout>
         ),
       },

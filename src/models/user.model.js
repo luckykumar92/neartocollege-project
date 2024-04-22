@@ -17,9 +17,30 @@ const userSchema = new Schema(
       lowercase: true,
       trim: true,
     },
+    phone: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
     password: {
       type: String,
       required: [true, "Password is required"],
+    },
+    role: {
+      type: String,
+      enum: ["user", "admin", "superadmin"],
+      default: "user",
+    },
+    verifyCode: {
+      type: String,
+      required: [true, "Verify Code is required"],
+      default: "123456",
+    },
+    verifyCodeExpiry: {
+      type: Date,
+      required: [true, "Verify Code Expiry is required"],
+      default: Date.now(),
     },
     isVerified: {
       type: Boolean,

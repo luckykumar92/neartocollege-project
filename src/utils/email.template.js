@@ -17,4 +17,25 @@ const accountVerificationEmailContent = (fullName, verifyCode) => {
 `;
 };
 
-export { accountVerificationEmailContent };
+const contactUsEmailContent = (fullName, email, message, subject) => {
+  return ` <div>
+        <p>Hello ${fullName},</p>
+        <div>
+            <p>
+                Thank you for Contacting Us.
+            </p>
+        </div>
+        <div>
+            <p>Email: ${email}</p>
+        </div>  
+        <div>
+            <p>Subject: ${subject}</p>
+        <div>
+            <p>Message: ${message}</p>
+        </div>
+        </div>
+    </div>
+    `;
+};
+
+export { accountVerificationEmailContent, contactUsEmailContent };

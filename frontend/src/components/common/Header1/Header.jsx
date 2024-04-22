@@ -101,7 +101,7 @@ const Header = () => {
         <div className="md:order-1 order-2">
           <Link to="/">
             <div>
-              <img src={headerLogo} className="w-64" alt="printsaathi" />
+              <img src={headerLogo} className="w-64" alt="neartocollege" />
             </div>
           </Link>
         </div>

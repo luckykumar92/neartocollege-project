@@ -9,7 +9,6 @@ import {
   SignupForm,
   ForgotPassword,
   ForgotPasswordChange,
-  IsVerified,
   AccountVerifyOtp,
   LoginWithOtp,
 } from "@/components/Auth/auth.js";
@@ -26,6 +25,10 @@ import {
   About,
 } from "./pages/pages.js";
 import Test from "./pages/Test.jsx";
+import AboutPage from "./pages/AboutPage.jsx";
+import ContactUsPage from "./pages/ContactUsPage.jsx";
+
+
 // ################ Router ###################
 
 const router = createBrowserRouter([
@@ -39,11 +42,11 @@ const router = createBrowserRouter([
       },
       {
         path: "contact-us",
-        element: <Contactus />,
+        element: <ContactUsPage />,
       },
       {
         path: "about-us",
-        element: <About />,
+        element: <AboutPage />,
       },
       {
         path: "/shops",
@@ -70,10 +73,10 @@ const router = createBrowserRouter([
         path: "/test",
         element: <Test />,
       },
-      // {
-      //   path: "/how-it-works",
-      //   element: <HowItWorks />,
-      // },
+
+      // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+      // ##################  Auth ##################
       {
         path: "/login",
         element: (
@@ -107,6 +110,10 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: "/forgotpassword",
+        element: <ForgotPassword />,
+      },
+      {
         path: "/printnow",
         element: (
           <AuthLayout authentication>
@@ -121,21 +128,6 @@ const router = createBrowserRouter([
             <Cart />
           </AuthLayout>
         ),
-      },
-
-      // ##################  Auth ##################
-
-      {
-        path: "/verifyemail",
-        element: <IsVerified />,
-      },
-      // {
-      //   path: "/fpmail",
-      //   element: <FPMail />,
-      // },
-      {
-        path: "/forgotpassword",
-        element: <ForgotPassword />,
       },
     ],
   },

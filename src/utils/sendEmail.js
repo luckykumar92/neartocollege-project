@@ -1,10 +1,4 @@
 import nodemailer from "nodemailer";
-import dotenv from "dotenv";
-
-//Config
-dotenv.config({
-  path: "./.env",
-});
 
 const EMAIL = process.env.EMAIL;
 const SMTP_PASSWORD = process.env.SMTP_PASSWORD;
@@ -25,7 +19,7 @@ const sendEmail = async ([...email], subject, content) => {
 
   try {
     let mailOptions = {
-      from: `Printsaathi ${EMAIL}`,
+      from: `Neartocollege ${EMAIL}`,
       to: [...email],
       subject: subject,
       html: content,

@@ -28,8 +28,8 @@ const AccountVerifyOtp = () => {
     setLoading(true);
     try {
       const verifyCode = otpValue.toString();
-      const phone = JSON.parse(localStorage.getItem("phone"));
-      console.log(phone);
+      const phone = JSON.parse(sessionStorage.getItem("phone"));
+      // console.log(phone);
 
       const verifyAccount = await axios.post("/api/v1/users/verify-account", {
         verifyCode,
@@ -39,7 +39,6 @@ const AccountVerifyOtp = () => {
       if (verifyAccount) {
         setLoading(false);
         Swal.fire("Account Verified Successfully", "Login Now", "success");
-        localStorage.removeItem("phone");
         navigate("/login");
       }
     } catch (error) {
@@ -59,7 +58,7 @@ const AccountVerifyOtp = () => {
       <div className="bg-[#023047] bg-opacity-40 py-8  max-[640px]:py-0 w-full h-full flex items-center justify-center min-h-[80vh]">
         <Card className="flex-1 max-w-xl mx-auto max-[640px]:my-0 max-[640px]:rounded-none h-full w-full bg-[#023047] rounded-md bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-60 border border-gray-100 my-auto">
           <div className="mx-auto flex justify-center my-4">
-            <img src={mainLogo} className="w-64" alt="printsaathi" />
+            <img src={mainLogo} className="w-64" alt="neartocollege" />
           </div>
           <CardHeader className="space-y-1 text-center">
             <CardTitle className="text-2xl text-white">Confirm OTP</CardTitle>

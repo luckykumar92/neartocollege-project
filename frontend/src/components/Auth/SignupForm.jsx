@@ -21,6 +21,7 @@ import Swal from "sweetalert2";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { ForgotPassword } from "./auth";
 import LoadingPopup from "@/components/ui/custom/LoadingPopup";
+import GenerateOtpForLogin from "./GenerateOtpForLogin";
 
 // #########################################################
 const SignupForm = () => {
@@ -63,7 +64,10 @@ const SignupForm = () => {
           "Please Verify Your Account",
           "success"
         );
-        localStorage.setItem("phone", JSON.stringify(userData.data.data.phone));
+        sessionStorage.setItem(
+          "phone",
+          JSON.stringify(userData.data.data.phone)
+        );
         navigate("/account-verify");
       }
     } catch (error) {
@@ -214,7 +218,11 @@ const SignupForm = () => {
               <div className="relative flex justify-center flex-row mx-auto space-x-4 sm:space-x-12">
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button variant="link" className=" text-white">
+                    <Button
+                      variant="link"
+                      disabled={true}
+                      className="text-white"
+                    >
                       Forgot Password
                     </Button>
                   </DialogTrigger>
@@ -227,13 +235,17 @@ const SignupForm = () => {
                       Login With OTP
                     </Button>
                   </DialogTrigger>
-                  <ForgotPassword />
+                  <GenerateOtpForLogin />
                 </Dialog>
               </div>
             </CardFooter>
             {/* // ----------------------------------------- */}
             <CardFooter>
-              <Button disabled variant="outline" className=" w-[80%] mx-auto">
+              <Button
+                disabled={true}
+                variant="outline"
+                className=" w-[80%] mx-auto"
+              >
                 {/* <Github color="#000000" /> */}
                 Login with Google
               </Button>

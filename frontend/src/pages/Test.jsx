@@ -1,11 +1,10 @@
-import LoginForm from "@/components/Auth/LoginForm copy";
-import { AccountVerifyOtp } from "@/components/Auth/auth";
+import Contact from "@/components/Contact/ContactUs";
 import React from "react";
 
 const Test = () => {
   return (
     <div>
-      <AccountVerifyOtp />
+      <Contact />
     </div>
   );
 };

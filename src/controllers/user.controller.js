@@ -6,7 +6,10 @@ import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
 import { mailSender } from "../utils/mailer.js";
 import { sendEmail } from "../utils/sendEmail.js";
-import { accountVerificationEmailContent } from "../utils/email.template.js";
+import {
+  accountVerificationEmailContent,
+  contactUsEmailContent,
+} from "../utils/email.template.js";
 
 // ################## Generate Access and Refresh Token ##################
 
@@ -271,7 +274,7 @@ const generateOtpForLogin = asyncHandler(async (req, res) => {
 
   return res
     .status(201)
-    .json(new ApiResponse(200, {}, "Otp Sended successfully"));
+    .json(new ApiResponse(200, { email, phone }, "Otp Sended successfully"));
 });
 
 // ############## Login With Otp #################
@@ -635,24 +638,36 @@ const forgotPassword = asyncHandler(async (req, res) => {
 // ##################### Contact Us ###################
 
 const contactUs = asyncHandler(async (req, res) => {
-  const contactData = req.body;
-  // console.log(contactData);
-  const mailContent = `<!doctype html>
-<html lang="en">
-  <body
-  >
-    <p style="font-family: sans-serif">Contact Email : ${contactData.email}</p>
-    <p style="font-family: sans-serif">Subject : ${contactData.subject}</p>
-    <p style="font-family: sans-serif">Message : ${contactData.message}</p>
-  </body>
-</html>`;
+  const { fullName, email, subject, message } = req.body;
 
-  const email = "neartocollege@gmail.com";
-  await mailSender([email], "Contact Us / Feedback", mailContent);
+  if (!fullName || !email || !subject || !message) {
+    throw new ApiError(400, "All fields are required");
+  }
+
+  const emailContent = contactUsEmailContent(fullName, email, message, subject);
+  let support_mail = process.env.SUPPORT_EMAIL;
+  const emailResponse = await sendEmail(
+    [support_mail],
+    "Contact Us / Feedback",
+    emailContent
+  );
+
+  if (emailResponse.success == "false") {
+    throw new ApiError(
+      500,
+      "Something went wrong while sending verification email"
+    );
+  }
 
   return res
     .status(201)
-    .json(new ApiResponse(200, {}, "Contact us Form Submitted successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        { success: "true" },
+        "Contact us Form Submitted successfully"
+      )
+    );
 });
 
 // ################### Exports Controllers #################

@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import NavBar from "./NavBar/NavBar";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Logo from "../Logo";
 import {
   CircleUserRound,
@@ -8,8 +8,6 @@ import {
   LogOut,
   Menu,
   Settings,
-  ShoppingCart,
-  SquareUserRound,
   User,
 } from "lucide-react";
 import {
@@ -40,6 +38,7 @@ import { Separator } from "@/components/ui/separator";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { logout } from "@/redux/features/auth/authSlice";
+import Swal from "sweetalert2";
 
 const sideBarItems = [
   {
@@ -87,15 +86,22 @@ const userMenuItems = [
 
 const Header = () => {
   const authStatus = useSelector((state) => state.auth.status);
-  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
 
   const logoutHandler = async () => {
-    await axios.post("/api/v1/users/logout").then(() => {
+    setLoading(true);
+    try {
+      await axios.post("/api/v1/users/logout");
       dispatch(logout());
-      alert("Logout Successfully");
-    });
+      setLoading(false);
+      Swal.fire("Logout Successfully", "", "success");
+    } catch (error) {
+      setLoading(false);
+      Swal.fire(`${error.response.data.message}`, "", "error");
+    }
   };
+
   const authItems = [
     {
       name: "Login",
@@ -171,7 +177,7 @@ const Header = () => {
             </SheetTrigger>
             <SheetContent side="left">
               <SheetHeader>
-                <SheetTitle>PrintSaathi</SheetTitle>
+                <SheetTitle>Neartocollege</SheetTitle>
               </SheetHeader>
               <Separator className="mt-3 h-1 bg-black" />
               <div className="p-6 w-full flex flex-col flex-wrap">
@@ -180,7 +186,7 @@ const Header = () => {
                     <li key={index}>
                       <Link
                         to={item.slug}
-                        class="w-full text-start flex items-center gap-x-3.5 py-2 px-2.5
+                        className="w-full text-start flex items-center gap-x-3.5 py-2 px-2.5
                             text-sm text-slate-700 rounded-lg hover:bg-gray-100
                             dark:bg-gray-800 dark:hover:bg-gray-900
                             dark:text-slate-400 dark:hover:text-slate-300
@@ -199,6 +205,8 @@ const Header = () => {
             </SheetContent>
           </Sheet>
         </div>
+        {/* -------------------------------------------------- */}
+        {loading && <h1>Loading...</h1>}
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ const LoadingPopup = ({ loading }) => {
   return (
     <AlertPopup open={loading} onOpenChange={false} className="w-min">
       <button
-        disabled
+        disabled={true}
         className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none p-3 bg-black dark:bg-white text-white dark:text-black w-min"
       >
         <Loader className="mr-2 h-4 w-4 animate-spin" />

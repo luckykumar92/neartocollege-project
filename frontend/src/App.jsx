@@ -9,6 +9,7 @@ import Footer from "./components/common/Footer/Footer.jsx";
 const App = () => {
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
+
   useEffect(() => {
     axios
       .get("/api/v1/users/getuser")
@@ -32,7 +33,9 @@ const App = () => {
         <Footer />
       </div>
     </div>
-  ) : null;
+  ) : (
+    <div>Loading...</div>
+  );
 };
 
 export default App;

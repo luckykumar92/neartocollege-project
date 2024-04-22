@@ -22,6 +22,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import authBg from "@/assets/auth-bg.jpg";
 import Swal from "sweetalert2";
 import LoadingPopup from "../ui/custom/LoadingPopup.jsx";
+import GenerateOtpForLogin from "./GenerateOtpForLogin.jsx";
 
 // ----------------------------------------------------
 
@@ -139,7 +140,11 @@ const LoginForm = () => {
               <div className="relative flex justify-center flex-row mx-auto space-x-4 sm:space-x-12">
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button variant="link" className=" text-white">
+                    <Button
+                      variant="link"
+                      disabled={true}
+                      className="text-white"
+                    >
                       Forgot Password
                     </Button>
                   </DialogTrigger>
@@ -152,13 +157,17 @@ const LoginForm = () => {
                       Login With OTP
                     </Button>
                   </DialogTrigger>
-                  <ForgotPassword />
+                  <GenerateOtpForLogin />
                 </Dialog>
               </div>
             </CardFooter>
             {/* // ----------------------------------------- */}
             <CardFooter>
-              <Button disabled variant="outline" className=" w-[80%] mx-auto">
+              <Button
+                disabled={true}
+                variant="outline"
+                className=" w-[80%] mx-auto"
+              >
                 {/* <Github color="#000000" /> */}
                 Login with Google
               </Button>

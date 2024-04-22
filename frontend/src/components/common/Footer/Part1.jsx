@@ -14,7 +14,7 @@ const Part1 = () => {
             <div className="flex flex-row md:flex-col">
               <div className="mr-3 md:mr-0">
                 <Link to="/">
-                  <img src={headerLogo} className="w-64" alt="printsaathi" />
+                  <img src={headerLogo} className="w-64" alt="neartocollege" />
                 </Link>
               </div>
               {/* <div className="flex flex-row space-x-4 md:pt-7">
@@ -38,17 +38,17 @@ const Part1 = () => {
               </h2>
               <ul className="text-white space-y-3">
                 <li className="">
-                  <Link to="#" className="hover:underline ">
+                  <Link to="/" className="hover:underline ">
                     <LinkTitle title="Home" />
                   </Link>
                 </li>
                 <li>
-                  <Link to="#" className="hover:underline">
+                  <Link to="/about-us" className="hover:underline">
                     <LinkTitle title="About Us" />
                   </Link>
                 </li>
                 <li>
-                  <Link to="#" className="hover:underline">
+                  <Link to="/contact-us" className="hover:underline">
                     <LinkTitle title="Contact Us" />
                   </Link>
                 </li>

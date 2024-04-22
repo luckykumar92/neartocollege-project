@@ -134,7 +134,11 @@ const LoginForm = () => {
 
           {/* // ----------------------------------------- */}
           <CardFooter>
-            <Button disabled variant="outline" className=" w-[80%] mx-auto">
+            <Button
+              disabled={true}
+              variant="outline"
+              className=" w-[80%] mx-auto"
+            >
               {/* <Github color="#000000" /> */}
               Login with Google
             </Button>

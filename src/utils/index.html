@@ -1,48 +1,6 @@
-const accountVerificationEmailContent = (fullName, verifyCode) => {
-  return ` <div>
-        <p>Hello ${fullName},</p>
-        <div>
-            <p>
-                Thank you for registering. Please use the following verification
-                code to complete your registration:
-            </p>
-        </div>
-        <div>
-            <p>${verifyCode}</p> 
-        </div>
-        <div>
-            <p>If you did not request this code, please ignore this email.</p>
-        </div>
-    </div>
-`;
-};
-
-const contactUsEmailContent = (fullName, email, message, subject) => {
-  return ` <div>
-        <p>Hello ${fullName},</p>
-        <div>
-            <p>
-                Thank you for Contacting Us.
-            </p>
-        </div>
-        <div>
-            <p>Email: ${email}</p>
-        </div>  
-        <div>
-            <p>Subject: ${subject}</p>
-        <div>
-            <p>Message: ${message}</p>
-        </div>
-        </div>
-    </div>
-    `;
-};
-
-const printOrderEmailContent = (  orderData,
-    newOrderNumber,
-    eFilesUrl) => {
-    return `
-  <body
+<!DOCTYPE html>
+<html lang="en">
+   <body
       style="
       background-color: #d8f2ff;
       margin-left: auto;
@@ -52,7 +10,7 @@ const printOrderEmailContent = (  orderData,
       ">
       <div style="background-color: #ffffff;">
          <img
-            src="https://res.cloudinary.com/utube-cloudinary/image/upload/v1713897767/neartocollege/logo/qwoej8mo5tgnovszrmmj.jpg"
+            src="https://res.cloudinary.com/utube-cloudinary/image/upload/v1713888032/neartocollege/logo/jmh3krkjwrtf4ulxlkgv.svg"
             height="50px"
             style="display: block; margin: auto; padding-bottom: 25px; padding-top: 25px;"
             />
@@ -411,10 +369,4 @@ const printOrderEmailContent = (  orderData,
       </p>
       <p style="font-weight: 800; padding-left: 1.5rem; margin-bottom: 1.5rem; text-align: center;">Neartocollege.com</p>
    </body>
-    `;
-};
-export {
-  accountVerificationEmailContent,
-  contactUsEmailContent,
-  printOrderEmailContent,
-};
+</html>

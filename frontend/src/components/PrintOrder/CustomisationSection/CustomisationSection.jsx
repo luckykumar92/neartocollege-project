@@ -103,9 +103,11 @@ const CustomisationSection = ({ shopData }) => {
   };
   return (
     <div>
-      <p className="flex items-center text-5xl font-extrabold text-black text-opacity-90 max-w-fit p-1  max-[480px]:ml-0 mb-10">
-        {shopName}({shopLocation})
-      </p>
+      <div className="">
+        <p className="flex underline py-2 text-center mx-auto text-xl sm:text-3xl md:text-4xl font-extrabold text-[#023047] max-w-fit p-1 mb-10">
+          {shopName}({shopLocation})
+        </p>
+      </div>
       <form onSubmit={handleSubmit(customisationForm)} className="mt-8">
         <div className="grid gap-6 grid-cols-2 md:grid-cols-4 ">
           {/* ******************* No of Pages ********************* */}
@@ -209,7 +211,7 @@ const CustomisationSection = ({ shopData }) => {
           <Button
             disabled={totalPages == 0}
             type="submit"
-            className="w-[100px] h-[40px] mt-[90px] max-[480px]:m-0 text-white font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 bg-[#023047] hover:bg-white hover:text-[#023047] focus:outline-none"
+            className="w-[100px] h-[40px] mt-[90px] max-[480px]:m-0 text-white font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 bg-[#023047] hover:bg-white hover:text-[#023047] focus:outline-none place-self-end"
           >
             Continue
           </Button>

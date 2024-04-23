@@ -61,7 +61,9 @@ const DeliveryForm = () => {
               required: true,
             })}
           />
-          <Button>Save & Continue</Button>
+          <Button className=" w-full mx-auto bg-[#023047] hover:bg-gray-300 hover:text-[#023047]">
+            Save & Continue
+          </Button>
         </div>
       </form>
     </div>

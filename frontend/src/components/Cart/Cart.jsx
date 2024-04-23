@@ -1,13 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import swal from "sweetalert";
 import { useNavigate } from "react-router-dom";
 import DeliveryForm from "./DeliveryForm";
 import OrderPrice from "./OrderPrice";
-import headerbanner from "../../assets/hero1.png";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { setOrderData } from "@/redux/features/print/orderSlice";
 import axios from "axios";
+import Swal from "sweetalert2";
+import LoadingPopup from "@/components/ui/custom/LoadingPopup";
 
 const Cart = () => {
   const address = useSelector((state) => state.order.address);
@@ -16,16 +16,18 @@ const Cart = () => {
   const orderDataLength = JSON.stringify(orderData).length;
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
 
   const orderHandler = async () => {
+    setLoading(true);
     try {
       const orderResponse = await axios.post(
         "/api/v1/prints/printorder",
         orderData
       );
       if (orderResponse) {
-        // setLoading(false);
-        swal(
+        setLoading(false);
+        Swal.fire(
           "Congratulations!!!",
           `Order placed successfully\n\nCheck your email for order details`,
           "success"
@@ -37,8 +39,8 @@ const Cart = () => {
       }
     } catch (error) {
       console.log(error);
-      // setLoading(false);
-      swal(`Something went wrong`, "error");
+      setLoading(false);
+      Swal.fire(`Something went wrong`, "", "error");
     }
   };
   return (
@@ -87,7 +89,7 @@ const Cart = () => {
               {/* right side  */}
               {/* ----------------Order Details---------------- */}
               <div className="col-span-1">
-                <div className="glass p-6 box-border rounded-lg">
+                <div className="mt-4 p-6 box-border bg-[#023047] rounded-md bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-90 border border-gray-100">
                   {/*<PrintOrder/>*/}
                   {/* orders  */}
                   {/* 
@@ -104,7 +106,7 @@ const Cart = () => {
                   <div>
                     <Button
                       disabled={addressLength < 3}
-                      className="w-full px-6 py-3 rounded-lg bg-primary text-white poppins ring-red-300 focus:ring-4 transition duration-500"
+                      className="w-full mx-auto bg-[#023047] hover:bg-gray-300 hover:text-[#023047]"
                       onClick={orderHandler}
                     >
                       {addressLength < 3 ? "address not added" : "Place Order"}
@@ -122,6 +124,7 @@ const Cart = () => {
           </div>
         )}
       </div>
+      {loading && <LoadingPopup loading={loading} />}
     </main>
   );
 };

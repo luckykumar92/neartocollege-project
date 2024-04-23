@@ -2,6 +2,8 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { setFilesUrl, setTotalPages } from "@/redux/features/print/printSlice";
+import LoadingPopup from "@/components/ui/custom/LoadingPopup";
+import Swal from "sweetalert2";
 
 const UploadSection = () => {
   const presetKey = String(import.meta.env.VITE_PRESET_KEY);
@@ -54,10 +56,12 @@ const UploadSection = () => {
       });
 
       await Promise.all(promises);
-
       setUploaded(true);
+      Swal.fire("File Uploaded Successfully", "", "success");
     } catch (err) {
       console.log(err);
+      setUploading(false);
+      Swal.fire("Error Uploading File", "", "error");
     } finally {
       setUploading(false);
     }
@@ -66,24 +70,22 @@ const UploadSection = () => {
   dispatch(setTotalPages(noOfPages));
   dispatch(setFilesUrl(cloudinaryUrls));
 
-  // console.log(arrOfPages);
-
   // ###################################################
 
   return (
     <div className="flex flex-row max-[480px]:flex-col focus:outline-none bg-[#023047]">
       <div className="flex flex-col p-4 items-center borde min-w-[350px]">
-        <div class="mx-auto max-w-7xl p-3">
-          <label class="flex w-full cursor-pointer appearance-none items-center justify-center rounded-md border-2 border-dashed border-[#eeeeee] p-6 transition-all hover:border-primary-300">
-            <div class="space-y-1 text-center">
-              <div class="mx-auto inline-flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
+        <div className="mx-auto max-w-7xl p-3">
+          <label className="flex w-full cursor-pointer appearance-none items-center justify-center rounded-md border-2 border-dashed border-[#eeeeee] p-6 transition-all hover:border-primary-300">
+            <div className="space-y-1 text-center">
+              <div className="mx-auto inline-flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke-width="1.5"
                   stroke="currentColor"
-                  class="h-6 w-6 text-gray-500"
+                  className="h-6 w-6 text-gray-500"
                 >
                   <path
                     stroke-linecap="round"
@@ -92,25 +94,24 @@ const UploadSection = () => {
                   />
                 </svg>
               </div>
-              <div class=" text-white">
+              <div className=" text-white">
                 <a
                   href="#"
-                  class="font-medium text-primary-500 hover:text-primary-700"
+                  className="font-medium text-primary-500 hover:text-primary-700"
                 >
                   Click to upload
                 </a>
                 &nbsp;or drag and drop
               </div>
-              <p class="text-sm text-gray-500">
+              <p className="text-sm text-gray-500">
                 PDF, WORDX, PPTX, PNG, JPG or JPEG (up to 10MB)
               </p>
-              <p class="text-sm text-gray-500">
+              <p className="text-sm text-gray-500">
                 Recommended<span className="text-white">&nbsp; PDF File</span>
               </p>
             </div>
-            {/* <input id="example5" type="file" class="sr-only" /> */}
             <input
-              class="sr-only"
+              className="sr-only"
               type="file"
               name="image"
               accept=".pdf"
@@ -119,11 +120,9 @@ const UploadSection = () => {
             />
           </label>
         </div>{" "}
-        {uploading && (
-          <div className=" flex flex-col text-yellow-400">
-            File Uploading...
-          </div>
-        )}
+        {/* ------------------------- */}
+        {uploading && <LoadingPopup loading={uploading} />}
+        {/* ---------------------------- */}
         {uploaded && (
           <div className="flex flex-col mb-2 text-sm font-medium text-white">
             <span className=" text-green-500">File Successfully Uploaded!</span>
@@ -139,7 +138,9 @@ const UploadSection = () => {
               title={`File Preview ${index}`}
               className=" p-1 w-[350px] h-[220px]"
             />
-            <p className=" text-center">Pages: {arrOfPages[index]}</p>
+            <p className=" text-center text-white">
+              Pages: {arrOfPages[index]}
+            </p>
           </div>
         ))}
       </div>

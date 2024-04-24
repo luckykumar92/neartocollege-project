@@ -19,15 +19,12 @@ import {
   PrivacyPolicy,
   RefundAndCancellation,
   Faq,
-  Contactus,
+  ContactUsPage,
   PrintNow,
   Cart,
-  About,
+  AboutPage,
 } from "./pages/pages.js";
 import Test from "./pages/Test.jsx";
-import AboutPage from "./pages/AboutPage.jsx";
-import ContactUsPage from "./pages/ContactUsPage.jsx";
-
 
 // ################ Router ###################
 

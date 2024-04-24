@@ -4,7 +4,6 @@ import {
   getShopDataById,
   getShopLocationData,
   printOrder,
-  testUpload,
   uploadPrintFile,
 } from "../controllers/print.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -40,23 +39,6 @@ router.route("/uploadprintfile").post(
   uploadPrintFile
 );
 
-// router.route("/uploadprintfile", upload.single("avatar"), uploadPrintFile);
-
-// router.post("/uploadfile", upload.array("file"), testUpload);
-
-router.route("/uploadfile").post(
-  upload.fields([
-    {
-      name: "file",
-      maxCount: 100,
-    },
-    // {
-    //   name: "coverImage",
-    //   maxCount: 100,
-    // },
-  ]),
-  testUpload
-);
 router.route("/printorder").post(verifyJWT, printOrder);
 
 export default router;

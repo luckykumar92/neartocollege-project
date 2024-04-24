@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import swal from "sweetalert";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { updateAddress } from "@/redux/features/print/orderSlice";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import Swal from "sweetalert2";
 
 const DeliveryForm = () => {
   const { register, handleSubmit } = useForm();
@@ -14,7 +14,7 @@ const DeliveryForm = () => {
     localStorage.setItem("address", JSON.stringify(data));
     dispatch(updateAddress(data));
 
-    swal(
+    Swal.fire(
       "address Updated!",
       "Your shipping details updated successfully!",
       "success"

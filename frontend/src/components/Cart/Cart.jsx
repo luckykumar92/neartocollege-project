@@ -18,13 +18,27 @@ const Cart = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
 
+  // +++++++++++++++++++++ Order Value ++++++++++++++++++++++++++++
+  const price = orderData?.subTotal || 0;
+  const subTotal = parseFloat(price.toFixed(2));
+  const tax = parseFloat((price % 5).toFixed(2));
+  const deliveryFee = parseFloat((price % 20).toFixed(2));
+  const orderTotal = parseFloat((subTotal + tax + deliveryFee).toFixed(2));
+
+  // ++++++++++++++++++++++++++++++++++++++++++++++++
   const orderHandler = async () => {
+    const orderValue = {
+      subTotal: subTotal,
+      tax: tax,
+      deliveryFee: deliveryFee,
+      orderTotal: orderTotal,
+    };
     setLoading(true);
     try {
-      const orderResponse = await axios.post(
-        "/api/v1/prints/printorder",
-        orderData
-      );
+      const orderResponse = await axios.post("/api/v1/prints/printorder", {
+        orderData: orderData,
+        orderValue: orderValue,
+      });
       if (orderResponse) {
         setLoading(false);
         Swal.fire(
@@ -101,7 +115,15 @@ const Cart = () => {
                   <h1 className="py-4 font-[800] text-xl bg-yellow-200 mx-auto text-center">
                     ORDER DETAILS
                   </h1>
-                  {<OrderPrice />}
+                  {
+                    <OrderPrice
+                      orderData={orderData}
+                      subTotal={subTotal}
+                      tax={tax}
+                      deliveryFee={deliveryFee}
+                      orderTotal={orderTotal}
+                    />
+                  }
                   {/* place order button  */}
                   <div>
                     <Button

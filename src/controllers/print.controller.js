@@ -169,7 +169,7 @@ const testUpload = asyncHandler(async (req, res) => {
 
 // ##################################################
 const printOrder = asyncHandler(async (req, res) => {
-  const orderData = req.body;
+  const { orderData, orderValue } = req.body;
   const timestamp = new Date().getTime();
   const randomNum = Math.floor(Math.random() * 10000); // You can adjust the range as needed
   const newOrderNumber = `ORDER-${timestamp}-${randomNum}`;
@@ -182,7 +182,8 @@ const printOrder = asyncHandler(async (req, res) => {
   const emailContent = printOrderEmailContent(
     orderData,
     newOrderNumber,
-    eFilesUrl
+    eFilesUrl,
+    orderValue
   );
 
   //   const mailContent = `<!DOCTYPE html>
@@ -571,13 +572,13 @@ const printOrder = asyncHandler(async (req, res) => {
     "Order Detail",
     emailContent
   );
- 
-   if (emailResponse.success == "false") {
-     throw new ApiError(
-       500,
-       "Something went wrong while sending verification email"
-     );
-   }
+
+  if (emailResponse.success == "false") {
+    throw new ApiError(
+      500,
+      "Something went wrong while sending verification email"
+    );
+  }
 
   // await mailSender([shopEmail, userEmail], "Order Detail", mailContent);
 
